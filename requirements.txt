@@ -9,3 +9,4 @@ statsmodels
 openpyxl
 setuptools
 Flask==2.3.3
+dash==2.14.2
