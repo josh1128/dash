@@ -11,7 +11,7 @@ import dash_bootstrap_components as dbc
 print("Running file:", os.path.abspath(__file__))
 
 # === Define File Path ===
-file_path = r'C:\Users\AC03537\OneDrive - Alberta Central\Desktop\test.xlsx'
+file_path = 'test.xlsx'
 sheet_main = 'Potential Output'
 sheet_hours = 'Hours'
 sheet_is_curve = 'IS Curve'
