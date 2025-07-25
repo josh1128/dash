@@ -134,7 +134,6 @@ server = app.server
 
 app.layout = dbc.Container([
     html.H2("Economic Forecast Dashboard", className="text-center my-4 fw-bold"),
-
     dbc.Row([
         dbc.Col([
             html.Label("Select General Variable", className="fw-semibold"),
@@ -147,7 +146,6 @@ app.layout = dbc.Container([
                 clearable=True,
                 className="mb-3"
             ),
-
             html.Label("Select IS Curve Variable", className="fw-semibold"),
             dcc.Dropdown(
                 id='is-curve-dropdown',
@@ -157,7 +155,6 @@ app.layout = dbc.Container([
                 placeholder="Optional: Select IS Curve Variable",
                 className="mb-3"
             ),
-
             html.Label("Select Phillips Curve Variable", className="fw-semibold"),
             dcc.Dropdown(
                 id='phillips-dropdown',
@@ -167,7 +164,6 @@ app.layout = dbc.Container([
                 placeholder="Optional: Select Phillips Curve Variable",
                 className="mb-3"
             ),
-
             html.Label("Select Taylor Rule Variable", className="fw-semibold"),
             dcc.Dropdown(
                 id='taylor-dropdown',
@@ -177,7 +173,6 @@ app.layout = dbc.Container([
                 placeholder="Optional: Select Taylor Rule Variable",
                 className="mb-3"
             ),
-
             html.Label("Select Data Type", className="fw-semibold"),
             dcc.RadioItems(
                 id='data-type-selector',
@@ -191,7 +186,6 @@ app.layout = dbc.Container([
                 inline=True,
                 className="mb-4"
             ),
-
             html.Label("Select Year Range", className="fw-semibold"),
             dcc.RangeSlider(
                 id='year-range-slider',
@@ -202,7 +196,6 @@ app.layout = dbc.Container([
                 tooltip={"placement": "bottom", "always_visible": False}
             ),
         ], md=4),
-
         dbc.Col([
             dbc.Card([
                 dbc.CardBody([
@@ -212,6 +205,9 @@ app.layout = dbc.Container([
         ], md=8)
     ], align="start")
 ], fluid=True)
+
+# === Force eager layout initialization ===
+app.layout = app.layout
 
 # === Callback ===
 @app.callback(
@@ -225,7 +221,6 @@ app.layout = dbc.Container([
 )
 def update_graph(selected_general, selected_is_curve, selected_phillips, selected_taylor, selected_type, selected_year_range):
     start_year, end_year = selected_year_range
-
     if selected_taylor:
         selected_var = selected_taylor
         df = taylor_df
@@ -242,59 +237,20 @@ def update_graph(selected_general, selected_is_curve, selected_phillips, selecte
         return go.Figure()
 
     filtered_df = df[(df['Year'] >= start_year) & (df['Year'] <= end_year)]
-
     fig = go.Figure()
     if selected_type == 'trend':
-        fig.add_trace(go.Scatter(
-            x=filtered_df['Date'],
-            y=filtered_df.get(f"{selected_var}_Trend"),
-            mode='lines',
-            name=f"{selected_var} - Trend",
-            line=dict(color='green', dash='dot')
-        ))
+        fig.add_trace(go.Scatter(x=filtered_df['Date'], y=filtered_df.get(f"{selected_var}_Trend"), mode='lines', name=f"{selected_var} - Trend", line=dict(color='green', dash='dot')))
     elif selected_type == 'cycle':
-        fig.add_trace(go.Scatter(
-            x=filtered_df['Date'],
-            y=filtered_df.get(f"{selected_var}_Cycle"),
-            mode='lines',
-            name=f"{selected_var} - Cycle",
-            line=dict(color='purple', dash='dot')
-        ))
+        fig.add_trace(go.Scatter(x=filtered_df['Date'], y=filtered_df.get(f"{selected_var}_Cycle"), mode='lines', name=f"{selected_var} - Cycle", line=dict(color='purple', dash='dot')))
     elif selected_type == 'raw_trend':
-        fig.add_trace(go.Scatter(
-            x=filtered_df['Date'],
-            y=filtered_df.get(selected_var),
-            mode='lines',
-            name=f"{selected_var} - Raw",
-            line=dict(color='blue')
-        ))
-        fig.add_trace(go.Scatter(
-            x=filtered_df['Date'],
-            y=filtered_df.get(f"{selected_var}_Trend"),
-            mode='lines',
-            name=f"{selected_var} - Trend",
-            line=dict(color='green', dash='dot')
-        ))
+        fig.add_trace(go.Scatter(x=filtered_df['Date'], y=filtered_df.get(selected_var), mode='lines', name=f"{selected_var} - Raw", line=dict(color='blue')))
+        fig.add_trace(go.Scatter(x=filtered_df['Date'], y=filtered_df.get(f"{selected_var}_Trend"), mode='lines', name=f"{selected_var} - Trend", line=dict(color='green', dash='dot')))
     else:
-        fig.add_trace(go.Scatter(
-            x=filtered_df['Date'],
-            y=filtered_df.get(selected_var),
-            mode='lines',
-            name=f"{selected_var} - Raw",
-            line=dict(color='blue')
-        ))
+        fig.add_trace(go.Scatter(x=filtered_df['Date'], y=filtered_df.get(selected_var), mode='lines', name=f"{selected_var} - Raw", line=dict(color='blue')))
 
-    fig.update_layout(
-        title={'text': f"{selected_var} ({start_year} to {end_year})", 'x': 0.5, 'xanchor': 'center'},
-        xaxis_title="Date",
-        yaxis_title=selected_var,
-        legend_title="Data Type",
-        template="plotly_white",
-        margin=dict(l=40, r=40, t=60, b=40),
-        hovermode="x unified"
-    )
+    fig.update_layout(title={'text': f"{selected_var} ({start_year} to {end_year})", 'x': 0.5, 'xanchor': 'center'}, xaxis_title="Date", yaxis_title=selected_var, legend_title="Data Type", template="plotly_white", margin=dict(l=40, r=40, t=60, b=40), hovermode="x unified")
     return fig
 
 # === Run the App ===
 if __name__ == '__main__':
-    app.run(debug=True, use_reloader=False)
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8050)), debug=False)
