@@ -130,6 +130,7 @@ year_max = max(data['Year'].max(), is_curve_df['Year'].max(), phillips_df['Year'
 # === Dash App Layout ===
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 app.title = "Economic Forecast Dashboard"
+server = app.server
 
 app.layout = dbc.Container([
     html.H2("Economic Forecast Dashboard", className="text-center my-4 fw-bold"),
